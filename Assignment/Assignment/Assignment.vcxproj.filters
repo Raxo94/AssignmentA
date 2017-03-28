@@ -21,7 +21,7 @@
     <ClCompile Include="HousingRegister.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Housing.cpp">
+    <ClCompile Include="House.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

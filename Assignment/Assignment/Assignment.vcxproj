@@ -110,7 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Housing.cpp" />
+    <ClCompile Include="House.cpp" />
     <ClCompile Include="HousingRegister.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>

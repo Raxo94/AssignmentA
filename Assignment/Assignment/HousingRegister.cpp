@@ -13,10 +13,10 @@ HousingRegister::~HousingRegister()
 }
 
 
-void HousingRegister::addHouse()
+void HousingRegister::addHouse(House* newHouse)
 {
-	House * newPointer = new House;
-	houses[houseCount] = newPointer;
+	
+	houses[houseCount] = newHouse;
 	houseCount += 1;
 
 	//this will work aslong as we dont actually make more than 2 houses
@@ -29,7 +29,7 @@ const string HousingRegister::toString()
 
 	for (unsigned int i = 0; i < houseCount; i++)
 	{
-		stream <<"House ID: " << houses[i]->getIDNumber() << " Rent: " << houses[i]->getRent() <<"Number of Rooms: " <<houses[i]->getRoomCount() << "\n";
+		stream << houses[i]->toString() << "\n";
 	}
 	
 	return stream.str();

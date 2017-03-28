@@ -1,14 +1,17 @@
 #include <iostream>
 #include "HousingRegister.h"
+#include "House.h"
 using namespace std;
 
 enum Choices{ZERO,ADDHOUSE,PRESENTHOUSES,EXIT};
+House* CreateNewHouse();
 
 int main()
 { 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	
 	HousingRegister housingRegister;
+
 	unsigned int choice;
 	do
 	{
@@ -27,7 +30,7 @@ int main()
 		switch (choice)
 		{
 			case(ADDHOUSE): 
-				housingRegister.addHouse();
+				housingRegister.addHouse(CreateNewHouse());
 				break;
 
 			case(PRESENTHOUSES): 
@@ -40,4 +43,32 @@ int main()
 	} while (choice != EXIT);
 
 	return 0;
+}
+
+House* CreateNewHouse()
+{
+	unsigned int tempID, tempArea, tempRoomCount, tempRent;
+	string tempAdress, tempType;
+
+	cout << "Give the new house a unique ID number: ";
+	cin >> tempID;
+	//if unique
+	cout << "Give the house an adress: ";
+	cin >> tempAdress;
+
+	cout << "What type of house is it: ";
+	cin >> tempType;
+
+	cout << "How many square meters is the living area: ";
+	cin >> tempArea;
+
+	cout << "How many rooms are there: ";
+	cin >> tempRoomCount;
+
+	cout << "How much is the rent: ";
+	cin >> tempRent;
+
+	return new House(tempID, tempRent, tempArea, tempRoomCount, tempAdress, tempType);
+
+
 }

@@ -15,7 +15,7 @@ public:
 	HousingRegister();
 	~HousingRegister();
 
-	void addHouse();
+	void addHouse(House* newHouse);
 	const string toString();
 
 };
