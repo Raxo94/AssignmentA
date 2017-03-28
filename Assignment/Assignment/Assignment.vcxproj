@@ -110,11 +110,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Housing.cpp" />
     <ClCompile Include="HousingRegister.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Housing.h" />
+    <ClInclude Include="House.h" />
     <ClInclude Include="HousingRegister.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -21,12 +21,15 @@
     <ClCompile Include="HousingRegister.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Housing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Housing.h">
+    <ClInclude Include="HousingRegister.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HousingRegister.h">
+    <ClInclude Include="House.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

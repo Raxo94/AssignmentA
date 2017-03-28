@@ -21,20 +21,20 @@ int main()
 		cout << "3:Exit Program \n";
 		cin >> choice;
 
+		std::cin.clear();
+		fflush(stdin);
+
 		switch (choice)
 		{
 			case(ADDHOUSE): 
-				housingRegister.addHousing();
+				housingRegister.addHouse();
 				break;
 
 			case(PRESENTHOUSES): 
-				cout << "You are Amazing \n";
+				cout << housingRegister.toString();
+				getchar();
 				break;
 		}
-
-		std::cin.clear();
-		fflush(stdin);
-		
 
 		cout << "\n \n \n"; // Time for next user input
 	} while (choice != EXIT);
