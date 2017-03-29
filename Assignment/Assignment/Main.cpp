@@ -6,6 +6,7 @@ using namespace std;
 
 enum Choices{ZERO,ADDHOUSE,REMOVEHOUSE,PRESENTHOUSES,EXIT};
 House* CreateNewHouse();
+const unsigned int removeHouseUsingID();
 bool isNumeric();
 
 int main()
@@ -21,7 +22,7 @@ int main()
 		cout << "Press the corresponding number input to Select an alternative \n";
 		cout << "--- \n";
 		cout << "1:Add house \n";
-		cout << "2:Remove House \n";
+		cout << "2:Remove House with ID \n";
 		cout << "3:Present all Housings \n";
 		//cout << "4:Present Housings with rent \n";
 		
@@ -39,7 +40,7 @@ int main()
 				break;
 			
 			case(REMOVEHOUSE):
-				//housingRegister.addHouse(CreateNewHouse()); 
+				housingRegister.removeHouse(removeHouseUsingID());
 				break;
 
 			case(PRESENTHOUSES): 
@@ -88,6 +89,19 @@ House* CreateNewHouse()
 
 	return new House(tempRent, tempArea, tempRoomCount, tempAdress, tempType);
 
+
+}
+
+const unsigned int removeHouseUsingID()
+{
+	unsigned int removeID;
+	do
+	{
+		cout << "Enter ID of house to remove: ";
+		cin >> removeID;
+
+	} while (!isNumeric());
+	return removeID;
 
 }
 

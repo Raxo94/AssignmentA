@@ -18,14 +18,26 @@ void HousingRegister::expandHouses()
 
 }
 
+void HousingRegister::decrementHouses()
+{
+	if (houseCount > 0)
+	{
+		House  **newArray = new House*[houseCount - 1];
+		memcpy(newArray, houses, (sizeof(House*) * (houseCount-1) ) );
+		delete[] houses;
+		houses = newArray;
+	}
+}
+
 unsigned int HousingRegister::generateUniqueID()
 {
 	unsigned int firstDigit;
 	unsigned int secondDigit;
 	unsigned int thirdDigit;
+
 	unsigned int testID;
 
-	unsigned int maxAmountOfHouses = 999;
+	unsigned int maxAmountOfHouses = 999; //this needs to be changed. Actually the amount of houses we can have to make it wrong is less
 	bool unique;
 
 	do
@@ -71,7 +83,36 @@ void HousingRegister::addHouse(House* newHouse)
 	houses[houseCount] = newHouse;
 	houseCount += 1;
 
-	//this will work aslong as we dont actually make more than 2 houses
+}
+
+void HousingRegister::removeHouse(unsigned int ID)
+{
+	if (houseCount > 0)
+	{
+		unsigned int index = -1;
+
+		for (unsigned int i = 0; i < houseCount; i++)
+		{
+			if (ID == houses[i]->getIDNumber())
+			{
+				index = i;
+			}
+		}
+
+		if (index != -1)
+		{
+			cout << "INDEX FOUND\n";
+			unsigned int remaining = houseCount - index;
+
+			for (unsigned int i = 0; i < (remaining - 1); i++)
+			{
+				houses[remaining + i] = houses[remaining + i + 1];
+			}
+
+			decrementHouses();
+			houseCount--;
+		}
+	}
 
 }
 
