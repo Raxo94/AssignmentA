@@ -10,6 +10,8 @@ class HousingRegister
 private:
 	House ** houses = nullptr;
 	unsigned int houseCount = 0;
+	void expandHouses();
+	unsigned int generateUniqueID();
 
 public:
 	HousingRegister();

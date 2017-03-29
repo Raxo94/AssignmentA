@@ -5,10 +5,9 @@ House::House()
 {
 }
 
-House::House(unsigned int IDNumber, unsigned int rent, unsigned int livingArea, unsigned int roomCount, string adress, string typeOfHouse)
+House::House( unsigned int rent, unsigned int livingArea, unsigned int roomCount, string adress, string typeOfHouse)
 {
-
-	this->IDNumber = IDNumber;
+	this->IDNumber = 0;
 	this->rent = rent;
 	this->livingArea = livingArea;
 	this->roomCount = roomCount;
@@ -30,6 +29,11 @@ const unsigned int House::getRoomCount()
 const unsigned int House::getIDNumber()
 {
 	return this->IDNumber;
+}
+
+void House::setIDNumber(unsigned int newID)
+{
+	this->IDNumber = newID;
 }
 
 const string House::toString()

@@ -11,9 +11,12 @@ private:
 	string adress = "", typeOfHouse = "";
 public:
 	House();
-	House(unsigned int IDNumber, unsigned int rent, unsigned int livingArea, unsigned int roomCount,string adress, string typeOfHouse);
+	House( unsigned int rent, unsigned int livingArea, unsigned int roomCount,string adress, string typeOfHouse);
 	const unsigned int getRent();
 	const unsigned int getRoomCount();
 	const unsigned int getIDNumber();
+
+	void setIDNumber(unsigned int newID);
+
 	const string toString();
 };
