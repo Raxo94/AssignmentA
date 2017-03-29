@@ -20,19 +20,31 @@ void HousingRegister::expandHouses()
 
 unsigned int HousingRegister::generateUniqueID()
 {
-	unsigned int firstDigit = 0;
-	unsigned int secondDigit = 0;
-	unsigned int thirdDigit = 0;
-	unsigned int testID = 0;
+	unsigned int firstDigit;
+	unsigned int secondDigit;
+	unsigned int thirdDigit;
+	unsigned int testID;
+
+	unsigned int maxAmountOfHouses = 999;
+	bool unique;
 
 	do
 	{
-		firstDigit = rand() % 9 + 1;
-		secondDigit = rand() % 10 + 1;
-		thirdDigit = rand() % 10 + 1;
-		testID = firstDigit + (secondDigit * 10) + (thirdDigit * 100);
+		unique = true;
+		firstDigit = (rand() % 9) + 1;
+		secondDigit = (rand() % 9) + 1;
+		thirdDigit = (rand() % 9) + 1;
+		testID = firstDigit + (secondDigit * 10) + (thirdDigit * 100); 
+		
+		for (unsigned int  i = 0; i < houseCount; i++)
+		{
+			if (testID == houses[i]->getIDNumber())
+			{
+				unique = false;
+			}
+		}
 
-	} while (1 == 2);
+	} while (unique != true && houseCount<maxAmountOfHouses);
 
 	return testID;
 
