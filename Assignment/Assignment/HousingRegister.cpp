@@ -4,13 +4,15 @@ void HousingRegister::expandHouses()
 {
 	if (houseCount <= 0)
 	{
-		House  **newArray = new House*[houseCount + 1];
+		houseCount++;
+		House  **newArray = new House*[houseCount];
 		houses = newArray;
 	}
 	else
 	{
-		House  **newArray = new House*[houseCount + 1];
-		memcpy(newArray, houses, (sizeof(House*) * houseCount) );
+		houseCount++;
+		House  **newArray = new House*[houseCount];
+		memcpy(newArray, houses, (sizeof(House*) * houseCount-1) );
 		delete[] houses;
 		houses = newArray;
 	}
@@ -22,10 +24,12 @@ void HousingRegister::decrementHouses()
 {
 	if (houseCount > 0)
 	{
-		House  **newArray = new House*[houseCount - 1];
-		memcpy(newArray, houses, (sizeof(House*) * (houseCount-1) ) );
+		houseCount--;
+		House  **newArray = new House*[houseCount];
+		memcpy(newArray, houses, (sizeof(House*) * (houseCount) ) );
 		delete[] houses;
 		houses = newArray;
+		
 	}
 }
 
@@ -80,40 +84,31 @@ void HousingRegister::addHouse(House* newHouse)
 {
 	newHouse->setIDNumber(generateUniqueID());
 	expandHouses();
-	houses[houseCount] = newHouse;
-	houseCount += 1;
-
+	houses[houseCount-1] = newHouse;
 }
 
 void HousingRegister::removeHouse(unsigned int ID)
 {
-	if (houseCount > 0)
-	{
 		unsigned int index = -1;
-
 		for (unsigned int i = 0; i < houseCount; i++)
 		{
 			if (ID == houses[i]->getIDNumber())
 			{
 				index = i;
+				delete houses[i];
 			}
 		}
 
 		if (index != -1)
-		{
-			cout << "INDEX FOUND\n";
-			unsigned int remaining = houseCount - index;
-
-			for (unsigned int i = 0; i < (remaining - 1); i++)
+		{		
+			unsigned int remaining = houseCount - index -1;
+			
+			for (unsigned int i = 0; i < (remaining); i++)
 			{
-				houses[remaining + i] = houses[remaining + i + 1];
+				houses[index + i] = houses[index + i + 1];
 			}
-
 			decrementHouses();
-			houseCount--;
 		}
-	}
-
 }
 
 const string HousingRegister::toString()
