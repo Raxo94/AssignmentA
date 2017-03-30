@@ -82,12 +82,15 @@ HousingRegister::~HousingRegister()
 
 void HousingRegister::addHouse(House* newHouse)
 {
-	newHouse->setIDNumber(generateUniqueID());
+	if (newHouse->getIDNumber() == 0)
+	{
+		newHouse->setIDNumber(generateUniqueID());
+	}
 	expandHouses();
 	houses[houseCount-1] = newHouse;
 }
 
-void HousingRegister::removeHouse(unsigned int ID)
+bool HousingRegister::removeHouse(unsigned int ID)
 {
 		unsigned int index = -1;
 		for (unsigned int i = 0; i < houseCount; i++)
@@ -108,7 +111,11 @@ void HousingRegister::removeHouse(unsigned int ID)
 				houses[index + i] = houses[index + i + 1];
 			}
 			decrementHouses();
+			return true;
 		}
+		
+		else 
+			return false;
 }
 
 const string HousingRegister::toString()
@@ -121,6 +128,39 @@ const string HousingRegister::toString()
 	}
 	
 	return stream.str();
+}
+
+const string HousingRegister::toStringFileData()
+{
+	stringstream stream;
+
+	for (unsigned int i = 0; i < houseCount; i++)
+	{
+		stream << houses[i]->toStringData();
+	}
+
+	return stream.str();
+}
+
+void HousingRegister::createHousesFromFileData(string * HouseList, unsigned int houseCount)
+{
+	unsigned int tempID, tempArea, tempRoomCount, tempRent;
+	string tempAdress, tempType;
+
+	//the order is ID adress type meters rooms rent
+	for (unsigned int i = 0; i < houseCount; i++)
+	{
+		tempID = atoi(HouseList[i].c_str());
+		tempType = HouseList[i + 1];
+		tempAdress = HouseList[i + 2];
+		tempArea = atoi(HouseList[i+3].c_str());
+		tempRoomCount = atoi(HouseList[i+4].c_str());
+		tempRent = atoi(HouseList[i + 5].c_str());
+
+		
+		addHouse(new House(tempID,tempRent, tempArea, tempRoomCount, tempAdress, tempType));
+		cout << "\n";
+	}
 }
 
 

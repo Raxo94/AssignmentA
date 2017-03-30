@@ -3,6 +3,8 @@
 #include <iostream>   
 #include <sstream>   
 
+#define linesPerHouse  6
+
 using namespace std;
 
 class HousingRegister
@@ -19,7 +21,10 @@ public:
 	~HousingRegister();
 
 	void addHouse(House* newHouse);
-	void removeHouse(unsigned int ID);
+	bool removeHouse(unsigned int ID);
 	const string toString();
+	const string toStringFileData();
+	void createHousesFromFileData(string* HouseList, unsigned int houseCount);
+	
 
 };
