@@ -2,35 +2,20 @@
 
 void HousingRegister::expandHouses()
 {
-	if (houseCount <= 0)
-	{
-		houseCount++;
-		House  **newArray = new House*[houseCount];
-		houses = newArray;
-	}
-	else
-	{
-		houseCount++;
-		House  **newArray = new House*[houseCount];
-		memcpy(newArray, houses, (sizeof(House*) * houseCount-1) );
+		houseListSize++;
+		House  **newArray = new House*[houseListSize];
+		memcpy(newArray, houses, (sizeof(House*) * houseCount) );
 		delete[] houses;
 		houses = newArray;
-	}
-
-
 }
 
 void HousingRegister::decrementHouses()
 {
-	if (houseCount > 0)
-	{
-		houseCount--;
-		House  **newArray = new House*[houseCount];
+		houseListSize--;
+		House  **newArray = new House*[houseListSize];
 		memcpy(newArray, houses, (sizeof(House*) * (houseCount) ) );
 		delete[] houses;
 		houses = newArray;
-		
-	}
 }
 
 unsigned int HousingRegister::generateUniqueID()
@@ -41,7 +26,7 @@ unsigned int HousingRegister::generateUniqueID()
 
 	unsigned int testID;
 
-	unsigned int maxAmountOfHouses = 999; //this needs to be changed. Actually the amount of houses we can have to make it wrong is less
+	unsigned int maxAmountOfHouses = 500;
 	bool unique;
 
 	do
@@ -68,15 +53,21 @@ unsigned int HousingRegister::generateUniqueID()
 
 HousingRegister::HousingRegister()
 {
-	
+	houses = new House*[INITIALARRAYSIZE];
+	houseListSize = INITIALARRAYSIZE;
 }
 
 HousingRegister::~HousingRegister()
 {
-	for (unsigned int i = 0; i<houseCount; i++)
+	for (unsigned int i = 0; i<houseCount; i++) //dont delete for the whole list. Only for houses
 		delete houses[i];
 	delete[] houses;
 
+}
+
+unsigned int HousingRegister::getHouseCount()
+{
+	return this->houseCount;
 }
 
 
@@ -86,48 +77,81 @@ void HousingRegister::addHouse(House* newHouse)
 	{
 		newHouse->setIDNumber(generateUniqueID());
 	}
-	expandHouses();
-	houses[houseCount-1] = newHouse;
+	
+	if (houseCount >= INITIALARRAYSIZE)
+		expandHouses();
+
+	houses[houseCount] = newHouse;
+	houseCount++;
 }
 
 bool HousingRegister::removeHouse(unsigned int ID)
 {
-		unsigned int index = -1;
-		for (unsigned int i = 0; i < houseCount; i++)
+	unsigned int index = findID(ID);
+	
+	if (index != -1)
+	{		
+		unsigned int remaining = houseCount - index -1;
+		for (unsigned int i = 0; i < (remaining); i++)
 		{
-			if (ID == houses[i]->getIDNumber())
-			{
-				index = i;
-				delete houses[i];
-			}
+			houses[index + i] = houses[index + i + 1];
 		}
-
-		if (index != -1)
-		{		
-			unsigned int remaining = houseCount - index -1;
-			
-			for (unsigned int i = 0; i < (remaining); i++)
-			{
-				houses[index + i] = houses[index + i + 1];
-			}
+		if (houseCount > INITIALARRAYSIZE)
+		{
+			houseCount--;
 			decrementHouses();
-			return true;
 		}
+		else
+		{
+			houseCount--;
+		}
+			
+		return true;
+	}
 		
-		else 
-			return false;
+	else 
+		return false;
 }
 
-const string HousingRegister::toString()
+bool HousingRegister::editHouse(unsigned int ID, House* editedHouse)
 {
-	stringstream stream;
+	unsigned int index = findID(ID);
 
+	if (index != -1)
+	{
+		delete houses[index]; //delete old. 
+		houses[index] = editedHouse; //replace with new
+		houses[index]->setIDNumber(ID);
+	}
+	return false;
+}
+
+void HousingRegister::toString(string* &listOfHouseStrings,unsigned int &stringCount) //presents all houses
+{
 	for (unsigned int i = 0; i < houseCount; i++)
 	{
-		stream << houses[i]->toString() << "\n";
+		listOfHouseStrings[i] = houses[i]->toString();
 	}
-	
-	return stream.str();
+	stringCount = houseCount;
+
+}
+
+void HousingRegister::toString(string* &listOfHouseStrings, unsigned int &stringCount, int cullingRent, int OnlyShowWithThisRoomCount, string type) //presents specific houses
+{
+	stringCount = 0;
+	for (unsigned int i = 0; i < houseCount; i++)
+	{
+		if (houses[i]->getRent() < cullingRent)
+		{
+			if (OnlyShowWithThisRoomCount < 0 || OnlyShowWithThisRoomCount == houses[i]->getRoomCount())
+			{
+				listOfHouseStrings[stringCount] = houses[i]->toString();
+				stringCount++;
+			}
+		}
+		
+	}
+
 }
 
 const string HousingRegister::toStringFileData()
@@ -142,25 +166,42 @@ const string HousingRegister::toStringFileData()
 	return stream.str();
 }
 
-void HousingRegister::createHousesFromFileData(string * HouseList, unsigned int houseCount)
+void HousingRegister::createHousesFromFileData(string* HouseList, unsigned int newHousesCount)
 {
 	unsigned int tempID, tempArea, tempRoomCount, tempRent;
 	string tempAdress, tempType;
 
 	//the order is ID adress type meters rooms rent
-	for (unsigned int i = 0; i < houseCount; i++)
+	for (unsigned int i = 0; i < (newHousesCount * LINESPERHOUSE); i+=LINESPERHOUSE)
 	{
 		tempID = atoi(HouseList[i].c_str());
-		tempType = HouseList[i + 1];
-		tempAdress = HouseList[i + 2];
+		tempAdress = HouseList[i + 1];
+		tempType = HouseList[i + 2];
 		tempArea = atoi(HouseList[i+3].c_str());
 		tempRoomCount = atoi(HouseList[i+4].c_str());
 		tempRent = atoi(HouseList[i + 5].c_str());
 
 		
-		addHouse(new House(tempID,tempRent, tempArea, tempRoomCount, tempAdress, tempType));
-		cout << "\n";
+		addHouse(new House(/*tempID,*/tempRent, tempArea, tempRoomCount, tempAdress, tempType));
 	}
+}
+
+void HousingRegister::printSize()
+{
+	cout << "alocated Memory size is " << houseListSize <<"\n";
+}
+
+int HousingRegister::findID(unsigned int ID)
+{
+	int index = -1;
+	for (unsigned int i = 0; i < houseCount; i++)
+	{
+		if (ID == houses[i]->getIDNumber())
+		{
+			index = i;
+		}
+	}
+	return index;
 }
 
 

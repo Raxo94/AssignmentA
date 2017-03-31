@@ -47,16 +47,41 @@ void House::setIDNumber(unsigned int newID)
 	this->IDNumber = newID;
 }
 
+void House::setAdress(string newAdress)
+{
+	this->adress = newAdress;
+}
+
+void House::setType(string newType)
+{
+	this->typeOfHouse = newType;
+}
+
+void House::setLivingArea(unsigned int newArea)
+{
+	this->livingArea = newArea;
+}
+
+void House::setRoomCount(unsigned int newRoomCount)
+{
+	this->roomCount = newRoomCount;
+}
+
+void House::setRent(unsigned int newRent)
+{
+	this->rent = newRent;
+}
+
 const string House::toString()
 {
 	stringstream stream;
-	stream << "ID: " << IDNumber << ", Type of house: " << typeOfHouse << ", Adress: " << adress << ", Living Area: " << livingArea << ", Amount of rooms: " << roomCount << ", Rent: "<< rent;
+	stream << "ID: " << IDNumber << ", Adress: " << adress << ", Type of house: " << typeOfHouse << ", Living Area: " << livingArea << ", Amount of rooms: " << roomCount << ", Rent: "<< rent;
 	return stream.str();
 }
 
 const string House::toStringData()
 {
 	stringstream stream;
-	stream << IDNumber << "\n" << typeOfHouse << "\n" << adress << "\n" << livingArea << "\n" << roomCount <<"\n"<< rent <<"\n";
+	stream << IDNumber << "\n" << adress << "\n" << typeOfHouse << "\n" << livingArea << "\n" << roomCount <<"\n"<< rent <<"\n";
 	return stream.str();
 }

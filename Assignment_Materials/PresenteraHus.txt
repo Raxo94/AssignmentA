@@ -1,0 +1,6 @@
+2. Presentera alla bostäder
+
+För att kunna uppfylla funktionalitetskrav 2 ska en medlemsfunktion, 
+som tar emot en array med tillräcklig kapacitet av typen string vilken sedan fylls på med strängarna 
+från Housing-objektens toString()-funktion, implementeras.  För att kunna dimensionera denna array behövs 
+även en medlemsfunktion från vilken antalet inlagda bostäder kan erhållas. 

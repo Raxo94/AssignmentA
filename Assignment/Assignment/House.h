@@ -18,6 +18,12 @@ public:
 	const unsigned int getIDNumber();
 
 	void setIDNumber(unsigned int newID);
+	void setAdress(string newAdress);
+	void setType(string newType);
+	void setLivingArea(unsigned int newArea);
+	void setRoomCount(unsigned int newRoomCount);
+	void setRent(unsigned int newRent);
+
 	const string toString();
 	const string toStringData();
 };

@@ -1,0 +1,3 @@
+Klassen HousingRegister ska ha en medlemsvariabel av typen Housing**. 
+Konstruktorn i denna klass ska skapa en array med en initial storlek 
+men arrayen ska kunna expandera vid behov. 

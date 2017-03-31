@@ -1,16 +1,38 @@
 #include <time.h>  
+#include <windows.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>   
 #include "HousingRegister.h"
 #include "House.h"
-using namespace std;
+#include "GlobalDefinitions.h"
 
-enum Choices{ZERO,ADDHOUSE,REMOVEHOUSE,PRESENTHOUSES, SAVETOFILE, LOADFROMFILE,EXIT};
+#pragma region Definitions
+#define STANDARDCOLOR 7 //used for consol text
+#define RED 12			//used for consol text
+#define GREEN 10		//used for consol text
+#define YELLOW 14		//used for consol text
+#pragma endregion
+
+using namespace std;
+enum Choices
+{
+ZERO,
+ADD_HOUSE,
+EDIT_HOUSE,
+REMOVE_HOUSE,
+PRESENT_HOUSES,
+PH_SPECIFY_LOWER_RENT,
+PH_SPECIFY_TYPE_ROOM,
+SAVE_TO_FILE, 
+LOAD_FROM_FILE,
+EXIT
+};
 
 #pragma region functionDeclaration
 House* CreateNewHouse();
-const unsigned int removeHouseUsingID();
+const unsigned int SpecifyID();
+void presentHouseRegister(HousingRegister* housingRegister, unsigned int choice);
 void writeHouseRegisterToFile(string houseRegisterData);
 bool readHouseRegisterFromFile(string* &houseList, unsigned int &houseCount);
 bool isNumeric();
@@ -23,60 +45,97 @@ int main()
 { 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	srand(time(NULL));
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //used to change color of text
 
 	HousingRegister housingRegister;
 	string currentHouseData; //used to get house data when writing to file
 	string* houseList = nullptr; //used to get HouseData when reading from file
 	unsigned int houseCount; //used when reading file
 	unsigned int choice; //used to get menu input from user
-	unsigned int removeID; //User input for which house to remove
+	unsigned int specifiedID; //User input for which house to select
 	do
 	{
 		cout << "Press the corresponding number input to Select an alternative \n";
 		cout << "--- \n";
 		cout << "1:Add house \n";
-		cout << "2:Remove House with ID \n";
-		cout << "3:Present all Housings \n";
-		cout << "4:Save register to file \n";
-		cout << "5:Load register from file \n";
+		cout << "2:Edit House with specified ID \n";
+		cout << "3:Remove House with specified ID \n";
+		cout << "4:Present all Houses \n";
+		cout << "5:Present all Houses with lower than specified rent \n";
+		cout << "6:Present all Houses with specified type and room amount \n";
+		cout << "7:Save register to file \n";
+		cout << "8:Load register from file \n";
 		
-		cout << "6:Exit Program \n";
+		cout << "9:Exit Program \n\n";
+		cout << "input: ";
 		cin >> choice;
 
-		std::cin.clear();
-		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		cin.clear();
+		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 
 		switch (choice)
 		{
 
-			case(ADDHOUSE): 
+			case(ADD_HOUSE): 
 				housingRegister.addHouse(CreateNewHouse()); 
+				SetConsoleTextAttribute(hConsole, GREEN);
+				cout << "house has been added";
+				SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
+				getchar();
 				break;
 			
-			case(REMOVEHOUSE):
-				removeID = removeHouseUsingID();
-				if( housingRegister.removeHouse(removeID) )
+			case(EDIT_HOUSE):
+				specifiedID = SpecifyID();
+				if (housingRegister.findID(specifiedID) != -1)
 				{
-					cout << "House with ID "<<  removeID << " Has been removed \n";
+					housingRegister.editHouse(specifiedID, CreateNewHouse());
+					SetConsoleTextAttribute(hConsole, GREEN);
+					cout << "House with ID " << specifiedID << " Has been Edited";
 				}
 				else
 				{
-					cout << "Failed to remove House with ID " << removeID << "\n";
+					SetConsoleTextAttribute(hConsole, RED);
+					cout << "Failed to find House with the ID " << specifiedID;
 				}
-				break;
-
-			case(PRESENTHOUSES): 
-				cout << housingRegister.toString();
+				SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
 				getchar();
 				break;
 
-			case(SAVETOFILE):
+			case(REMOVE_HOUSE):
+				specifiedID = SpecifyID();
+				if (housingRegister.removeHouse(specifiedID) )
+				{
+					SetConsoleTextAttribute(hConsole, GREEN);
+					cout << "House with ID " << specifiedID << " Has been removed";
+				}
+				
+				else
+				{
+					SetConsoleTextAttribute(hConsole, RED);
+					cout << "Failed to remove House with ID " << specifiedID;
+				}
+				SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
+				getchar();
+				break;
+
+			case(PRESENT_HOUSES): 
+				presentHouseRegister(&housingRegister,choice);
+				break;
+
+			case(PH_SPECIFY_LOWER_RENT):
+				presentHouseRegister(&housingRegister, choice);
+				break;
+
+			case(PH_SPECIFY_TYPE_ROOM):
+				break;
+			case(SAVE_TO_FILE):
 				currentHouseData = housingRegister.toStringFileData();
 				writeHouseRegisterToFile(currentHouseData);
 				break;
-			case(LOADFROMFILE):
-				if(readHouseRegisterFromFile(houseList, houseCount))
+			case(LOAD_FROM_FILE):
+				if (readHouseRegisterFromFile(houseList, houseCount))
 					housingRegister.createHousesFromFileData(houseList, houseCount);
+				delete[] houseList;
 				break;
 
 		}
@@ -98,12 +157,12 @@ House* CreateNewHouse()
 	cout << "Give the house an adress: ";
 	cin >> tempAdress;
 	cin.clear();
-	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 
 	cout << "What type of house is it: ";
 	cin >> tempType;
 	cin.clear();
-	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 
 	do
 	{
@@ -127,21 +186,67 @@ House* CreateNewHouse()
 
 }
 
-const unsigned int removeHouseUsingID()
+const unsigned int SpecifyID()
 {
-	unsigned int removeID;
+	unsigned int ID;
 	do
 	{
-		cout << "Enter ID of house to remove: ";
-		cin >> removeID;
+		cout << "Enter ID of the house: ";
+		cin >> ID;
 
 	} while (!isNumeric());
-	return removeID;
+	return ID;
 
 }
 
+
+void presentHouseRegister(HousingRegister* housingRegister,unsigned int choice)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //used to change color of text
+
+	
+	unsigned int maxStringCount = housingRegister->getHouseCount();
+	unsigned int actualStringCount;
+	if (maxStringCount > 0)
+	{
+
+
+		string* stringList = new string[maxStringCount]; //alocate
+		
+		if (choice == PRESENT_HOUSES)
+		{
+			housingRegister->toString(stringList,actualStringCount);
+		}
+		else if (choice == PH_SPECIFY_LOWER_RENT)
+		{
+			unsigned int chosenRent = 0;
+			do
+			{
+				cout << "show houses with rent below: ";
+				cin >>chosenRent;
+
+			} while (!isNumeric());
+			housingRegister->toString(stringList, actualStringCount, chosenRent, -1, "");
+		}
+		
+		SetConsoleTextAttribute(hConsole, YELLOW);
+		for (size_t i = 0; i < actualStringCount; i++)
+			cout << "\n" << stringList[i];
+		delete[] stringList; //delete
+	}
+	else
+	{
+		SetConsoleTextAttribute(hConsole, RED);
+		cout << "No houses in register";
+	}
+	SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
+	getchar();
+}
+
+
 void writeHouseRegisterToFile(string houseRegisterData)
 {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //used to change color of text
 	ofstream myfile;
 	string userFileNameInput;
 	stringstream filepath;
@@ -149,7 +254,7 @@ void writeHouseRegisterToFile(string houseRegisterData)
 	cout << "Specify Filename to write (without path or file-extension): ";
 	cin >> userFileNameInput;
 	cin.clear();
-	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 
 	filepath << "SAVEDFILES/";
 	filepath << userFileNameInput;
@@ -157,13 +262,18 @@ void writeHouseRegisterToFile(string houseRegisterData)
 	myfile.open(filepath.str());
 	myfile << houseRegisterData;
 	myfile.close();
+
+	SetConsoleTextAttribute(hConsole, GREEN); 
 	cout << "Your file has been saved \n";
+	SetConsoleTextAttribute(hConsole, STANDARDCOLOR); 
 	getchar();
 
 }
 
 bool readHouseRegisterFromFile(string* &houseList,unsigned int &houseCount)
 {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //used to change color of text
+
 	houseCount = 0;
 	ifstream myfile;
 	string userFileNameInput;
@@ -173,19 +283,19 @@ bool readHouseRegisterFromFile(string* &houseList,unsigned int &houseCount)
 	cout << "Specify Filename to read (without path or file-extension): ";
 	cin >> userFileNameInput;
 	cin.clear();
-	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 
 	filepath << "SAVEDFILES/";
 	filepath << userFileNameInput;
 	filepath << ".txt";
 	myfile.open(filepath.str());
 
-	unsigned int lines = std::count(std::istreambuf_iterator<char>(myfile),std::istreambuf_iterator<char>(), '\n'); 
-	houseCount = lines / 6;
+	unsigned int lines = count(istreambuf_iterator<char>(myfile),istreambuf_iterator<char>(), '\n'); 
+	houseCount = lines / LINESPERHOUSE;
 	houseList = new string[lines];
 	myfile.seekg(0, ios::beg);
 
-	if (myfile.is_open())
+	if (myfile.is_open() && (lines % LINESPERHOUSE) == 0 && houseCount > 0)
 	{
 		unsigned int i = 0;
 		while (getline(myfile, line))
@@ -194,19 +304,18 @@ bool readHouseRegisterFromFile(string* &houseList,unsigned int &houseCount)
 			i++;
 		}
 
-		if ((i % 6) != 0)
-		{
-			myfile.close();
-		}
-		else
-		{
-			myfile.close();
-			cout << "File read sucessfully";
-			return true;
-		}
-		
+		myfile.close();
+		SetConsoleTextAttribute(hConsole, GREEN); 
+		cout << "File read sucessfully";
+		SetConsoleTextAttribute(hConsole, STANDARDCOLOR); 
+		getchar();
+		return true;
 	}
+
+	myfile.close();
+	SetConsoleTextAttribute(hConsole, RED); 
 	cout << "failure to read file";
+	SetConsoleTextAttribute(hConsole, STANDARDCOLOR); 
 	return false;
 }
 
@@ -216,9 +325,11 @@ bool isNumeric()
 	{
 		// user didn't input a number
 		cin.clear();
-		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 		return false;
 	}
 	else
+		cin.clear();
+		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 		return true;
 }
