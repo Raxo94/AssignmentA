@@ -127,6 +127,7 @@ int main()
 				break;
 
 			case(PH_SPECIFY_TYPE_ROOM):
+				presentHouseRegister(&housingRegister, choice);
 				break;
 			case(SAVE_TO_FILE):
 				currentHouseData = housingRegister.toStringFileData();
@@ -227,6 +228,26 @@ void presentHouseRegister(HousingRegister* housingRegister,unsigned int choice)
 
 			} while (!isNumeric());
 			housingRegister->toString(stringList, actualStringCount, chosenRent, -1, "");
+		}
+		else if (choice == PH_SPECIFY_TYPE_ROOM)
+		{
+			unsigned int chosenRoomCount = 0;
+			string chosenType = "";
+
+			cout << "show houses with the type: ";
+			cin >> chosenType;
+
+			cin.clear();
+			cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+
+			do
+			{
+				cout << "show houses with a room count of: ";
+				cin >> chosenRoomCount;
+
+			} while (!isNumeric());
+
+			housingRegister->toString(stringList, actualStringCount, INFINITE, chosenRoomCount, chosenType);
 		}
 		
 		SetConsoleTextAttribute(hConsole, YELLOW);

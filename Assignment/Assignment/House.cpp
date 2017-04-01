@@ -42,6 +42,11 @@ const unsigned int House::getIDNumber()
 	return this->IDNumber;
 }
 
+const string House::getType()
+{
+	return this->typeOfHouse;
+}
+
 void House::setIDNumber(unsigned int newID)
 {
 	this->IDNumber = newID;

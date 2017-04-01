@@ -143,10 +143,14 @@ void HousingRegister::toString(string* &listOfHouseStrings, unsigned int &string
 	{
 		if (houses[i]->getRent() < cullingRent)
 		{
+
 			if (OnlyShowWithThisRoomCount < 0 || OnlyShowWithThisRoomCount == houses[i]->getRoomCount())
 			{
-				listOfHouseStrings[stringCount] = houses[i]->toString();
-				stringCount++;
+				if (type == houses[i]->getType() || type == "")
+				{
+					listOfHouseStrings[stringCount] = houses[i]->toString();
+					stringCount++;
+				}
 			}
 		}
 		

@@ -16,6 +16,7 @@ public:
 	const unsigned int getRent();
 	const unsigned int getRoomCount();
 	const unsigned int getIDNumber();
+	const string getType();
 
 	void setIDNumber(unsigned int newID);
 	void setAdress(string newAdress);
