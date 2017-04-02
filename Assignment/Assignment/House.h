@@ -12,6 +12,7 @@ private:
 public:
 	House();
 	House( const unsigned int rent,const unsigned int livingArea,const unsigned int roomCount,const string adress,const string typeOfHouse);
+	House( const unsigned int ID, const unsigned int rent, const unsigned int livingArea, const unsigned int roomCount, const string adress, const string typeOfHouse);
 
 	const unsigned int getRent();
 	const unsigned int getRoomCount();

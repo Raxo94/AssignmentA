@@ -113,6 +113,7 @@
     <ClCompile Include="House.cpp" />
     <ClCompile Include="HousingRegister.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlobalDefinitions.h" />

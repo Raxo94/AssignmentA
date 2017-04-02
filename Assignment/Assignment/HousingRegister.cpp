@@ -139,7 +139,8 @@ const bool HousingRegister::removeHouse(const unsigned int ID)
 	unsigned int index = findID(ID);
 	
 	if (index != -1)
-	{		
+	{
+		delete houses[index];
 		unsigned int remaining = houseCount - index -1;
 		for (unsigned int i = 0; i < (remaining); i++)
 		{
@@ -175,7 +176,7 @@ const bool HousingRegister::editHouse(const unsigned int ID, House* editedHouse)
 	return false;
 }
 
-void HousingRegister::toString(string* &listOfHouseStrings,unsigned int &stringCount) //presents all houses
+void HousingRegister::toString(string* &listOfHouseStrings,unsigned int &stringCount) 
 {
 	for (unsigned int i = 0; i < houseCount; i++)
 	{

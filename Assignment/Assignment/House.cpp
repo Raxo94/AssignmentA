@@ -17,6 +17,17 @@ House::House( const unsigned int rent, const unsigned int livingArea, const unsi
 	this->typeOfHouse = typeOfHouse;
 }
 
+House::House(const unsigned int ID, const unsigned int rent, const unsigned int livingArea, const unsigned int roomCount, const string adress, const string typeOfHouse)
+{
+	this->IDNumber = ID;
+	this->rent = rent;
+	this->livingArea = livingArea;
+	this->roomCount = roomCount;
+
+	this->adress = adress;
+	this->typeOfHouse = typeOfHouse;
+}
+
 const unsigned int House::getRent()
 {
 	return this->rent;
