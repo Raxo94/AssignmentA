@@ -3,18 +3,12 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>   
-#include "HousingRegister.h"
+#include "housingRegister.h"
 #include "House.h"
 #include "GlobalDefinitions.h"
 
-#pragma region Definitions
-#define STANDARDCOLOR 7 //used for consol text
-#define RED 12			//used for consol text
-#define GREEN 10		//used for consol text
-#define YELLOW 14		//used for consol text
-#pragma endregion
-
 using namespace std;
+
 enum Choices
 {
 ZERO,
@@ -26,16 +20,23 @@ PH_SPECIFY_LOWER_RENT,
 PH_SPECIFY_TYPE_ROOM,
 SAVE_TO_FILE, 
 LOAD_FROM_FILE,
-EXIT
+EXIT,
+COPY_CONSTRUCTOR,
+ASSIGNMENT_OPERATOR
 };
 
+
 #pragma region functionDeclaration
-House* CreateNewHouse();
+void addHouse(HousingRegister& housingRegister);
+House* createNewHouse(HousingRegister& housingRegister);
+void editHouse(HousingRegister& housingRegister);
+void RemoveHouse(HousingRegister& housingRegister);
+
 const unsigned int SpecifyID();
-void presentHouseRegister(HousingRegister* housingRegister, unsigned int choice);
-void writeHouseRegisterToFile(string houseRegisterData);
-bool readHouseRegisterFromFile(string* &houseList, unsigned int &houseCount);
-bool isNumeric();
+void presentHouseRegister(HousingRegister* housingRegister, const unsigned int choice);
+void writeHouseRegisterToFile(HousingRegister& housingRegister);
+void readHouseRegisterFromFile(HousingRegister & housingRegister);
+const bool isNumeric();
 #pragma endregion
 
 
@@ -45,15 +46,23 @@ int main()
 { 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	srand(time(NULL));
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //used to change color of text
+	
+	
+	HousingRegister* originalHousingRegister = new HousingRegister;
+	HousingRegister* assignedHousingRegister = new HousingRegister; //used for testing assigment operator
+	HousingRegister* copiedHousingRegister = nullptr;				//used for testing copyConstructor;
+	HousingRegister* housingRegister = originalHousingRegister;		//will point to different registers
+	assignedHousingRegister->addHouse(new House( 9999, 100, 4, "AssignmentTest", "InitialHouse"));
+	
 
-	HousingRegister housingRegister;
-	string currentHouseData; //used to get house data when writing to file
-	string* houseList = nullptr; //used to get HouseData when reading from file
+
+
 	unsigned int houseCount; //used when reading file
 	unsigned int choice; //used to get menu input from user
-	unsigned int specifiedID; //User input for which house to select
-	do
+	
+	
+	
+	do //program loop
 	{
 		cout << "Press the corresponding number input to Select an alternative \n";
 		cout << "--- \n";
@@ -65,8 +74,11 @@ int main()
 		cout << "6:Present all Houses with specified type and room amount \n";
 		cout << "7:Save register to file \n";
 		cout << "8:Load register from file \n";
-		
+		cout << "10: Test CopyConstructor\n";
+		cout << "11: Test Assignment_Operator\n\n";
+	
 		cout << "9:Exit Program \n\n";
+
 		cout << "input: ";
 		cin >> choice;
 
@@ -76,84 +88,84 @@ int main()
 		switch (choice)
 		{
 
-			case(ADD_HOUSE): 
-				housingRegister.addHouse(CreateNewHouse()); 
-				SetConsoleTextAttribute(hConsole, GREEN);
-				cout << "house has been added";
-				SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
-				getchar();
-				break;
-			
-			case(EDIT_HOUSE):
-				specifiedID = SpecifyID();
-				if (housingRegister.findID(specifiedID) != -1)
-				{
-					housingRegister.editHouse(specifiedID, CreateNewHouse());
-					SetConsoleTextAttribute(hConsole, GREEN);
-					cout << "House with ID " << specifiedID << " Has been Edited";
-				}
-				else
-				{
-					SetConsoleTextAttribute(hConsole, RED);
-					cout << "Failed to find House with the ID " << specifiedID;
-				}
-				SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
-				getchar();
-				break;
+		case(ADD_HOUSE) :
+			addHouse(*housingRegister);
+			break;
 
-			case(REMOVE_HOUSE):
-				specifiedID = SpecifyID();
-				if (housingRegister.removeHouse(specifiedID) )
-				{
-					SetConsoleTextAttribute(hConsole, GREEN);
-					cout << "House with ID " << specifiedID << " Has been removed";
-				}
-				
-				else
-				{
-					SetConsoleTextAttribute(hConsole, RED);
-					cout << "Failed to remove House with ID " << specifiedID;
-				}
-				SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
-				getchar();
-				break;
+		case(EDIT_HOUSE) :
+			editHouse(*housingRegister);
+			break;
 
-			case(PRESENT_HOUSES): 
-				presentHouseRegister(&housingRegister,choice);
-				break;
+		case(REMOVE_HOUSE) :
+			RemoveHouse(*housingRegister);
+			break;
 
-			case(PH_SPECIFY_LOWER_RENT):
-				presentHouseRegister(&housingRegister, choice);
-				break;
+		case(PRESENT_HOUSES) :
+			presentHouseRegister(housingRegister, choice);
+			break;
 
-			case(PH_SPECIFY_TYPE_ROOM):
-				presentHouseRegister(&housingRegister, choice);
-				break;
-			case(SAVE_TO_FILE):
-				currentHouseData = housingRegister.toStringFileData();
-				writeHouseRegisterToFile(currentHouseData);
-				break;
-			case(LOAD_FROM_FILE):
-				if (readHouseRegisterFromFile(houseList, houseCount))
-					housingRegister.createHousesFromFileData(houseList, houseCount);
-				delete[] houseList;
-				break;
+		case(PH_SPECIFY_LOWER_RENT) :
+			presentHouseRegister(housingRegister, choice);
+			break;
+
+		case(PH_SPECIFY_TYPE_ROOM) :
+			presentHouseRegister(housingRegister, choice);
+			break;
+
+		case(SAVE_TO_FILE) :
+			writeHouseRegisterToFile(*housingRegister);
+			break;
+
+		case(LOAD_FROM_FILE) :
+			readHouseRegisterFromFile(*housingRegister);
+			break;
+
+		case(COPY_CONSTRUCTOR) :
+			copiedHousingRegister = new HousingRegister(*housingRegister); //copy from the current register;
+			delete housingRegister;										  //delete the current register to test if a deepcopy has been made
+			housingRegister = copiedHousingRegister;					 //Replace the current with the copied
+			originalHousingRegister = nullptr;							// the first time we copy we delete the originalhouseRegister. Now we need to make sure not to delete it again.
+			break;
+
+		case(ASSIGNMENT_OPERATOR):
+			*housingRegister = *assignedHousingRegister;						// assign the assignedHouse register to currently used register.
+			break;
 
 		}
 
-		cout << "\n \n \n"; // Time for next user input
+		cout << "\n \n \n"; 
+	
 	} while (choice != EXIT);
+
+
+	//Exiting program
+	delete originalHousingRegister;
+	delete assignedHousingRegister;
+	delete copiedHousingRegister;
+
 
 	return 0;
 }
 
 
 
+//Functions
+void addHouse(HousingRegister& housingRegister)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	housingRegister.addHouse(createNewHouse(housingRegister));
 
-House* CreateNewHouse()
+	SetConsoleTextAttribute(hConsole, GREEN);
+	cout << "house has been added";
+	SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
+	getchar();
+}
+
+House* createNewHouse(HousingRegister& housingRegister)
 {
 	unsigned int tempArea, tempRoomCount, tempRent;
 	string tempAdress, tempType;
+	 
 
 	cout << "Give the house an adress: ";
 	cin >> tempAdress;
@@ -184,7 +196,46 @@ House* CreateNewHouse()
 	} while (!isNumeric());
 
 	return new House(tempRent, tempArea, tempRoomCount, tempAdress, tempType);
+}
 
+
+
+
+void editHouse(HousingRegister & housingRegister)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	unsigned int specifiedID = SpecifyID();
+	if (housingRegister.findID(specifiedID) != -1)
+	{
+		housingRegister.editHouse(specifiedID, createNewHouse(housingRegister));
+		SetConsoleTextAttribute(hConsole, GREEN);
+		cout << "House with ID " << specifiedID << " Has been Edited";
+	}
+	else
+	{
+		SetConsoleTextAttribute(hConsole, RED);
+		cout << "Failed to find House with the ID " << specifiedID;
+	}
+	SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
+	getchar();
+}
+
+void RemoveHouse(HousingRegister & housingRegister)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	unsigned int specifiedID = SpecifyID();
+	if (housingRegister.removeHouse(specifiedID))
+	{
+		SetConsoleTextAttribute(hConsole, GREEN);
+		cout << "House with ID " << specifiedID << " Has been removed";
+	}
+	else
+	{
+		SetConsoleTextAttribute(hConsole, RED);
+		cout << "Failed to remove House with ID " << specifiedID;
+	}
+	SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
+	getchar();
 }
 
 const unsigned int SpecifyID()
@@ -201,17 +252,13 @@ const unsigned int SpecifyID()
 }
 
 
-void presentHouseRegister(HousingRegister* housingRegister,unsigned int choice)
+void presentHouseRegister(HousingRegister* housingRegister,const unsigned int choice)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //used to change color of text
-
-	
 	unsigned int maxStringCount = housingRegister->getHouseCount();
 	unsigned int actualStringCount;
 	if (maxStringCount > 0)
 	{
-
-
 		string* stringList = new string[maxStringCount]; //alocate
 		
 		if (choice == PRESENT_HOUSES)
@@ -249,10 +296,11 @@ void presentHouseRegister(HousingRegister* housingRegister,unsigned int choice)
 
 			housingRegister->toString(stringList, actualStringCount, INFINITE, chosenRoomCount, chosenType);
 		}
-		
 		SetConsoleTextAttribute(hConsole, YELLOW);
 		for (size_t i = 0; i < actualStringCount; i++)
+		{
 			cout << "\n" << stringList[i];
+		}
 		delete[] stringList; //delete
 	}
 	else
@@ -265,7 +313,7 @@ void presentHouseRegister(HousingRegister* housingRegister,unsigned int choice)
 }
 
 
-void writeHouseRegisterToFile(string houseRegisterData)
+void writeHouseRegisterToFile(HousingRegister& housingRegister)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //used to change color of text
 	ofstream myfile;
@@ -281,7 +329,7 @@ void writeHouseRegisterToFile(string houseRegisterData)
 	filepath << userFileNameInput;
 	filepath << ".txt";
 	myfile.open(filepath.str());
-	myfile << houseRegisterData;
+	myfile << housingRegister.toStringFileData();
 	myfile.close();
 
 	SetConsoleTextAttribute(hConsole, GREEN); 
@@ -291,11 +339,12 @@ void writeHouseRegisterToFile(string houseRegisterData)
 
 }
 
-bool readHouseRegisterFromFile(string* &houseList,unsigned int &houseCount)
+void readHouseRegisterFromFile(HousingRegister & housingRegister)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //used to change color of text
+	string* houseList = nullptr; //used to get HouseData when reading from file
 
-	houseCount = 0;
+	unsigned int houseCount = 0;
 	ifstream myfile;
 	string userFileNameInput;
 	stringstream filepath;
@@ -329,18 +378,21 @@ bool readHouseRegisterFromFile(string* &houseList,unsigned int &houseCount)
 		SetConsoleTextAttribute(hConsole, GREEN); 
 		cout << "File read sucessfully";
 		SetConsoleTextAttribute(hConsole, STANDARDCOLOR); 
-		getchar();
-		return true;
+		housingRegister.createHousesFromFileData(houseList, houseCount);
+		
 	}
-
-	myfile.close();
-	SetConsoleTextAttribute(hConsole, RED); 
-	cout << "failure to read file";
-	SetConsoleTextAttribute(hConsole, STANDARDCOLOR); 
-	return false;
+	else
+	{
+		myfile.close();
+		SetConsoleTextAttribute(hConsole, RED);
+		cout << "failure to read file";
+		SetConsoleTextAttribute(hConsole, STANDARDCOLOR);
+	}
+	getchar();
+	delete[] houseList;
 }
 
-bool isNumeric()
+const bool isNumeric()
 {
 	if (cin.fail())
 	{

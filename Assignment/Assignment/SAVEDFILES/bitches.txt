@@ -1,0 +1,12 @@
+996
+AssignmentTest
+InitialHouse
+100
+4
+9999
+268
+1
+1
+1
+1
+1

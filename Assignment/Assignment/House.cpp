@@ -5,18 +5,8 @@ House::House()
 {
 }
 
-House::House(unsigned int ID, unsigned int rent, unsigned int livingArea, unsigned int roomCount, string adress, string typeOfHouse)
-{
-	this->IDNumber = ID;
-	this->rent = rent;
-	this->livingArea = livingArea;
-	this->roomCount = roomCount;
 
-	this->adress = adress;
-	this->typeOfHouse = typeOfHouse;
-}
-
-House::House( unsigned int rent, unsigned int livingArea, unsigned int roomCount, string adress, string typeOfHouse)
+House::House( const unsigned int rent, const unsigned int livingArea, const unsigned int roomCount, const string adress, const string typeOfHouse)
 {
 	this->IDNumber = 0;
 	this->rent = rent;
@@ -47,32 +37,32 @@ const string House::getType()
 	return this->typeOfHouse;
 }
 
-void House::setIDNumber(unsigned int newID)
+void House::setIDNumber(const unsigned int newID)
 {
 	this->IDNumber = newID;
 }
 
-void House::setAdress(string newAdress)
+void House::setAdress(const string newAdress)
 {
 	this->adress = newAdress;
 }
 
-void House::setType(string newType)
+void House::setType(const string newType)
 {
 	this->typeOfHouse = newType;
 }
 
-void House::setLivingArea(unsigned int newArea)
+void House::setLivingArea(const unsigned int newArea)
 {
 	this->livingArea = newArea;
 }
 
-void House::setRoomCount(unsigned int newRoomCount)
+void House::setRoomCount(const unsigned int newRoomCount)
 {
 	this->roomCount = newRoomCount;
 }
 
-void House::setRent(unsigned int newRent)
+void House::setRent(const unsigned int newRent)
 {
 	this->rent = newRent;
 }

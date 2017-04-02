@@ -1,4 +1,4 @@
-#include "HousingRegister.h"
+#include "housingRegister.h"
 
 void HousingRegister::expandHouses()
 {
@@ -18,7 +18,7 @@ void HousingRegister::decrementHouses()
 		houses = newArray;
 }
 
-unsigned int HousingRegister::generateUniqueID()
+const unsigned int HousingRegister::generateUniqueID()
 {
 	unsigned int firstDigit;
 	unsigned int secondDigit;
@@ -55,6 +55,55 @@ HousingRegister::HousingRegister()
 {
 	houses = new House*[INITIALARRAYSIZE];
 	houseListSize = INITIALARRAYSIZE;
+	houseCount = 0;
+}
+
+HousingRegister::HousingRegister(const HousingRegister & other)
+{
+	//since we are creting a new house register we dont need to delete anything
+	this->houses = new House*[other.houseListSize]; 
+	
+	for (unsigned int i = 0; i < other.houseCount; i++)
+	{
+
+		//deepcopy
+		this->houses[i] = new House;
+		*this->houses[i] = *other.houses[i];
+
+	}
+	this->houseCount = other.houseCount;
+	this->houseListSize = other.houseListSize;
+	
+}
+
+
+HousingRegister& HousingRegister::operator=(const HousingRegister & other)
+{
+	if (this != &other) //if the instanses are not pointing to the same memory adress
+	{
+		//step 1: delete old allocated data
+		for (unsigned int i = 0; i < this->houseCount; i++)
+		{
+			delete this->houses[i];
+		}
+		delete[] this->houses; //is this possible not a value
+
+		//step2: copy the new data
+		this->houses = new House*[other.houseListSize]; 
+		
+		for (unsigned int i = 0; i < other.houseCount; i++)
+		{
+
+			//deepcopy
+			this->houses[i] = new House;
+			*this->houses[i] = *other.houses[i];
+
+		}
+		this->houseCount = other.houseCount;
+		this->houseListSize = other.houseListSize;
+	}
+
+	return *this;
 }
 
 HousingRegister::~HousingRegister()
@@ -65,7 +114,7 @@ HousingRegister::~HousingRegister()
 
 }
 
-unsigned int HousingRegister::getHouseCount()
+const unsigned int HousingRegister::getHouseCount()
 {
 	return this->houseCount;
 }
@@ -85,7 +134,7 @@ void HousingRegister::addHouse(House* newHouse)
 	houseCount++;
 }
 
-bool HousingRegister::removeHouse(unsigned int ID)
+const bool HousingRegister::removeHouse(const unsigned int ID)
 {
 	unsigned int index = findID(ID);
 	
@@ -113,7 +162,7 @@ bool HousingRegister::removeHouse(unsigned int ID)
 		return false;
 }
 
-bool HousingRegister::editHouse(unsigned int ID, House* editedHouse)
+const bool HousingRegister::editHouse(const unsigned int ID, House* editedHouse)
 {
 	unsigned int index = findID(ID);
 
@@ -136,7 +185,7 @@ void HousingRegister::toString(string* &listOfHouseStrings,unsigned int &stringC
 
 }
 
-void HousingRegister::toString(string* &listOfHouseStrings, unsigned int &stringCount, int cullingRent, int OnlyShowWithThisRoomCount, string type) //presents specific houses
+void HousingRegister::toString(string* &listOfHouseStrings, unsigned int &stringCount, int cullingRent, const int OnlyShowWithThisRoomCount, const string type) //presents specific houses
 {
 	stringCount = 0;
 	for (unsigned int i = 0; i < houseCount; i++)
@@ -170,7 +219,7 @@ const string HousingRegister::toStringFileData()
 	return stream.str();
 }
 
-void HousingRegister::createHousesFromFileData(string* HouseList, unsigned int newHousesCount)
+void HousingRegister::createHousesFromFileData(const string* HouseList, const unsigned int newHousesCount)
 {
 	unsigned int tempID, tempArea, tempRoomCount, tempRent;
 	string tempAdress, tempType;
@@ -186,16 +235,11 @@ void HousingRegister::createHousesFromFileData(string* HouseList, unsigned int n
 		tempRent = atoi(HouseList[i + 5].c_str());
 
 		
-		addHouse(new House(/*tempID,*/tempRent, tempArea, tempRoomCount, tempAdress, tempType));
+		addHouse(new House(tempRent, tempArea, tempRoomCount, tempAdress, tempType));
 	}
 }
 
-void HousingRegister::printSize()
-{
-	cout << "alocated Memory size is " << houseListSize <<"\n";
-}
-
-int HousingRegister::findID(unsigned int ID)
+const int HousingRegister::findID(const unsigned int ID)
 {
 	int index = -1;
 	for (unsigned int i = 0; i < houseCount; i++)
@@ -207,6 +251,5 @@ int HousingRegister::findID(unsigned int ID)
 	}
 	return index;
 }
-
 
 
